@@ -1,0 +1,51 @@
+# Environment and local Python files
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Local workflow state
+aidlc/
+.aidlc/
+.claude/
+.github/agents/
+.github/skills/
+.github/hooks/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Terraform state, plans, and providers
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform/
+.terraform.lock.hcl
+
+# Local diagnostics and credentials
+response.json
+kms-policy.json
+*.pem
+
+# IDE and operating system files
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak

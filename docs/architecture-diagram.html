@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleet Telemetry — Architecture Diagram</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #f5f5f5; font-family: Arial, sans-serif; padding: 24px; color: #232f3e; }
+.page { max-width: 1120px; margin: 0 auto; }
+h1 { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+.subtitle { font-size: 12px; color: #777; text-align: center; margin-bottom: 20px; }
+
+.diagram-wrap { background: white; border: 2px solid #E7E7E7; border-radius: 8px; padding: 20px; }
+
+/* External actors */
+.actors-row { display: flex; justify-content: space-around; margin-bottom: 8px; padding: 0 40px; }
+.actor { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #444; width: 115px; text-align: center; }
+.actor-icon { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid; }
+.icon-v { background: #FFF3CD; border-color: #FF9900; }
+.icon-s { background: #D4E6F1; border-color: #1A73E8; }
+.icon-t { background: #E8D5F0; border-color: #8B44AC; }
+.icon-g { background: #FCE4EC; border-color: #E91E63; }
+
+/* Arrows between layers */
+.arr-row { display: flex; justify-content: space-around; padding: 0 40px; margin: 2px 0; }
+.arr-col { width: 115px; text-align: center; }
+.arr-sym { font-size: 16px; color: #bbb; display: block; }
+.arr-lbl { font-size: 9px; color: #999; display: block; }
+
+/* AWS Cloud */
+.aws-cloud { border: 2px solid #FF9900; border-radius: 10px; background: #FFFBF2; padding: 12px; position: relative; }
+.aws-badge { position: absolute; top: -12px; left: 14px; background: #FF9900; color: white; font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 4px; }
+
+/* Service box */
+.svc { border-radius: 8px; border: 1.5px solid; padding: 8px 12px; font-size: 11px; font-weight: 600; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.svc sub { font-weight: 400; font-size: 10px; display: block; opacity: .8; }
+.svc-apigw  { background: #E8F0FE; border-color: #4285F4; color: #1557B0; }
+.svc-cognito{ background: #F3E5F5; border-color: #8B44AC; color: #6A1B9A; }
+.svc-oidc   { background: #FCE4EC; border-color: #E91E63; color: #880E4F; }
+
+/* Rows */
+.row { display: flex; gap: 10px; margin-bottom: 10px; align-items: stretch; }
+
+/* Unit zone */
+.unit { border-radius: 8px; border: 1.5px dashed; padding: 10px; flex: 1; }
+.unit-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; text-align: center; margin-bottom: 8px; }
+.u1 { border-color: #FF9900; background: #FFFAF0; } .u1 .unit-lbl { color: #BF6000; }
+.u2 { border-color: #4285F4; background: #F0F5FF; } .u2 .unit-lbl { color: #1A56DB; }
+.u3 { border-color: #34A853; background: #F0FBF0; } .u3 .unit-lbl { color: #1B6C2E; }
+.u4 { border-color: #9E9E9E; background: #FAFAFA; flex: 1.15; } .u4 .unit-lbl { color: #555; }
+
+/* Item in unit */
+.itm { border-radius: 6px; border: 1px solid; padding: 5px 8px; font-size: 10px; font-weight: 600; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+.itm-ic { font-size: 13px; flex-shrink: 0; }
+.itm-tx { flex: 1; }
+.itm-sub { font-size: 9px; font-weight: 400; display: block; opacity: .75; }
+.i-or { background: #FFF3E0; border-color: #FF9900; color: #7A4500; }
+.i-bl { background: #E8F0FE; border-color: #4285F4; color: #1557B0; }
+.i-pu { background: #F3E5F5; border-color: #8B44AC; color: #6A1B9A; }
+.i-gr { background: #E8F8EE; border-color: #34A853; color: #1B6C2E; }
+.i-cy { background: #E0F7FA; border-color: #00BCD4; color: #006064; }
+.i-gy { background: #F5F5F5; border-color: #9E9E9E; color: #424242; }
+.div { border-top: 1px dashed #ccc; margin: 5px 0; }
+
+/* Flow number badge */
+.n { width: 16px; height: 16px; border-radius: 50%; background: #232F3E; color: #fff; font-size: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* Storage */
+.stor { border: 1.5px solid #34A853; border-radius: 8px; background: #F0FBF0; padding: 10px; margin-bottom: 10px; }
+.stor-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #1B6C2E; margin-bottom: 8px; }
+.stor-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.tbl { border-radius: 6px; border: 1px solid #34A853; background: #E8F8EE; padding: 5px 10px; font-size: 10px; font-weight: 600; color: #1B6C2E; text-align: center; }
+.tbl sub { display: block; font-size: 9px; font-weight: 400; color: #555; }
+
+/* Legend */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; justify-content: center; }
+.lg-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #555; }
+.lg-dot  { width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Fleet Telemetry System — AWS Architecture</h1>
+<p class="subtitle">Serverless · Python 3.11 · DynamoDB · API Gateway · eu-west-1 · Team 50 / Scenario 2</p>
+
+<div class="diagram-wrap">
+
+  <!-- ACTORS -->
+  <div class="actors-row">
+    <div class="actor"><div class="actor-icon icon-v">🚛</div>Vehicle Devices<span style="font-weight:400;color:#aaa;font-size:10px">200 · 20 msg/s</span></div>
+    <div style="width:20px"></div>
+    <div class="actor"><div class="actor-icon icon-s">👤</div>Staff Users<span style="font-weight:400;color:#aaa;font-size:10px">10–15 concurrent</span></div>
+    <div style="width:20px"></div>
+    <div class="actor"><div class="actor-icon icon-t">🏢</div>Third-Party Clients<span style="font-weight:400;color:#aaa;font-size:10px">OAuth 2.0 JWT</span></div>
+    <div style="width:20px"></div>
+    <div class="actor"><div class="actor-icon icon-g">🦊</div>GitLab CI/CD<span style="font-weight:400;color:#aaa;font-size:10px">OIDC federation</span></div>
+  </div>
+
+  <!-- ARROWS -->
+  <div class="arr-row" style="margin-bottom:6px">
+    <div class="arr-col"><span class="arr-sym">↓</span><span class="arr-lbl">POST /telemetry · HTTPS</span></div>
+    <div style="width:20px"></div>
+    <div class="arr-col"><span class="arr-sym">↓</span><span class="arr-lbl">GET /vehicles/** · HTTPS</span></div>
+    <div style="width:20px"></div>
+    <div class="arr-col"><span class="arr-sym">↓</span><span class="arr-lbl">Bearer JWT · HTTPS</span></div>
+    <div style="width:20px"></div>
+    <div class="arr-col"><span class="arr-sym">↓</span><span class="arr-lbl">OIDC → STS AssumeRole</span></div>
+  </div>
+
+  <!-- AWS CLOUD -->
+  <div class="aws-cloud">
+    <div class="aws-badge">☁️ &nbsp;AWS Cloud — eu-west-1</div>
+
+    <!-- GATEWAY + AUTH ROW -->
+    <div class="row" style="margin-top:6px">
+      <div class="svc svc-apigw" style="flex:1">
+        <span style="font-size:18px">🔀</span>
+        <strong>Amazon API Gateway HTTP API</strong>
+        <sub>POST /telemetry &nbsp;·&nbsp; GET /vehicles/{id} &nbsp;·&nbsp; GET /vehicles/{id}/alerts &nbsp;·&nbsp; GET /vehicles/{id}/route &nbsp;·&nbsp; GET /external/vehicles/{id}/status</sub>
+      </div>
+      <div class="svc svc-cognito" style="min-width:160px">
+        <span style="font-size:18px">🔐</span>
+        <strong>Amazon Cognito</strong>
+        <sub>User Pool · JWT authorizer<br>third-party routes only</sub>
+      </div>
+      <div class="svc svc-oidc" style="min-width:160px">
+        <span style="font-size:18px">🔑</span>
+        <strong>IAM OIDC Provider</strong>
+        <sub>GitLabOIDC-staging<br>GitLabOIDC-production</sub>
+      </div>
+    </div>
+
+    <!-- UNITS ROW -->
+    <div class="row">
+
+      <!-- U1 -->
+      <div class="unit u1">
+        <div class="unit-lbl">U1 — Telemetry Core</div>
+        <div class="itm i-or"><span class="itm-ic">λ</span><span class="itm-tx">u1_intake<span class="itm-sub">Validate · Dedup · Canonical ID · DynamoDB write</span></span><span class="n">1</span></div>
+        <div class="itm i-cy"><span class="itm-ic">📨</span><span class="itm-tx">SQS: accepted-reading<span class="itm-sub">+ DLQ · 3 retries</span></span><span class="n">2</span></div>
+        <div class="itm i-or"><span class="itm-ic">λ</span><span class="itm-tx">u1_accepted_processor<span class="itm-sub">Derive position · Raise alerts</span></span><span class="n">3</span></div>
+        <div class="itm i-cy"><span class="itm-ic">📨</span><span class="itm-tx">SQS: receipt<span class="itm-sub">+ DLQ</span></span></div>
+        <div class="itm i-or"><span class="itm-ic">λ</span><span class="itm-tx">u1_receipt_processor<span class="itm-sub">Update lastReceivedAt</span></span><span class="n">4</span></div>
+        <div class="div"></div>
+        <div class="itm i-or"><span class="itm-ic">λ</span><span class="itm-tx">u1_query<span class="itm-sub">State · Alerts · Route history (consumed by U2/U3)</span></span><span class="n">5</span></div>
+      </div>
+
+      <!-- U2 -->
+      <div class="unit u2">
+        <div class="unit-lbl">U2 — Fleet Access</div>
+        <div class="itm i-bl"><span class="itm-ic">λ</span><span class="itm-tx">u2_staff_query<span class="itm-sub">Fleet map · Route · Reports · Alerts</span></span><span class="n">6</span></div>
+        <div class="div"></div>
+        <div class="itm i-pu"><span class="itm-ic">λ</span><span class="itm-tx">u2_thirdparty_query<span class="itm-sub">JWT validate · Auth check · Current status only</span></span><span class="n">7</span></div>
+        <div class="itm i-gy" style="margin-top:4px"><span class="itm-ic">🗄️</span><span class="itm-tx">client_authorization<span class="itm-sub">DynamoDB · clientId → vehicleIds[]<br>HTTP 404 identical for unknown + unauthorized</span></span></div>
+      </div>
+
+      <!-- U3 -->
+      <div class="unit u3">
+        <div class="unit-lbl">U3 — Daily Reporting</div>
+        <div class="itm i-cy"><span class="itm-ic">⏰</span><span class="itm-tx">EventBridge Scheduler<span class="itm-sub">cron(5 0 * * ? *) — 00:05 UTC</span></span><span class="n">8</span></div>
+        <div class="itm i-gr"><span class="itm-ic">λ</span><span class="itm-tx">u3_fanout<span class="itm-sub">Enqueue one msg per active vehicle</span></span><span class="n">9</span></div>
+        <div class="itm i-cy"><span class="itm-ic">📨</span><span class="itm-tx">SQS: u3-report-work<span class="itm-sub">+ DLQ</span></span></div>
+        <div class="itm i-gr"><span class="itm-ic">λ</span><span class="itm-tx">u3_report_worker<span class="itm-sub">Distance (haversine) · Idle (≤60s) · Fuel · JSON + CSV</span></span><span class="n">10</span></div>
+      </div>
+
+      <!-- U4 OPS -->
+      <div class="unit u4">
+        <div class="unit-lbl">U4 — Shared Platform (Terraform IaC · GitLab CI/CD)</div>
+        <div class="itm i-gy"><span class="itm-ic">🔑</span><span class="itm-tx">AWS KMS<span class="itm-sub">Data key · State key · CMK rotation</span></span></div>
+        <div class="itm i-gy"><span class="itm-ic">📦</span><span class="itm-tx">Amazon S3<span class="itm-sub">Terraform state · KMS encrypted · Versioned</span></span></div>
+        <div class="itm i-gy"><span class="itm-ic">📊</span><span class="itm-tx">CloudWatch<span class="itm-sub">5 alarms · Dashboard · Structured logs</span></span></div>
+        <div class="itm i-gy"><span class="itm-ic">💾</span><span class="itm-tx">AWS Backup<span class="itm-sub">Hourly snapshots · 7-day retention</span></span></div>
+        <div class="itm i-gy"><span class="itm-ic">🔔</span><span class="itm-tx">Amazon SNS<span class="itm-sub">Alarm notifications</span></span></div>
+        <div class="itm i-gy"><span class="itm-ic">🔒</span><span class="itm-tx">IAM Roles (least-privilege)<span class="itm-sub">Per-Lambda · OIDC staging + production</span></span></div>
+      </div>
+
+    </div>
+
+    <!-- STORAGE -->
+    <div class="stor">
+      <div class="stor-lbl">🗄️ &nbsp;Amazon DynamoDB — PAY_PER_REQUEST · KMS Encrypted · Point-in-Time Recovery Enabled</div>
+      <div class="stor-grid">
+        <div class="tbl">canonical_history<sub>vehicleId + eventSortKey</sub></div>
+        <div class="tbl">outbox_projections<sub>Vehicle state · Alerts</sub></div>
+        <div class="tbl">sequence_idempotency<sub>Dedup key store</sub></div>
+        <div class="tbl">device_assignment<sub>Device → Vehicle binding</sub></div>
+        <div class="tbl">report_summaries<sub>vehicleId + utcDay</sub></div>
+        <div class="tbl">client_authorization<sub>clientId → vehicleIds[]</sub></div>
+      </div>
+    </div>
+
+    <div style="text-align:right;font-size:9px;color:#aaa;font-style:italic">GitLab CI/CD: MR → lint/test &nbsp;·&nbsp; main push → staging auto-deploy &nbsp;·&nbsp; git tag → production (manual approval)</div>
+
+  </div><!-- /aws-cloud -->
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="lg-item"><div class="lg-dot" style="background:#FFF3E0;border-color:#FF9900"></div>U1 Telemetry Core</div>
+    <div class="lg-item"><div class="lg-dot" style="background:#E8F0FE;border-color:#4285F4"></div>U2 Staff Access</div>
+    <div class="lg-item"><div class="lg-dot" style="background:#F3E5F5;border-color:#8B44AC"></div>U2 Third-Party Access</div>
+    <div class="lg-item"><div class="lg-dot" style="background:#E8F8EE;border-color:#34A853"></div>U3 Daily Reporting</div>
+    <div class="lg-item"><div class="lg-dot" style="background:#E0F7FA;border-color:#00BCD4"></div>SQS / EventBridge</div>
+    <div class="lg-item"><div class="lg-dot" style="background:#F5F5F5;border-color:#9E9E9E"></div>U4 Shared Platform</div>
+    <div class="lg-item"><div class="n" style="position:static;width:14px;height:14px;font-size:8px">N</div>Data flow step</div>
+  </div>
+
+</div>
+
+<p style="text-align:center;font-size:10px;color:#bbb;margin-top:10px">Fleet Telemetry · Team 50 · Scenario 2 · AWS Serverless · eu-west-1 · 2026-10-31</p>
+</div>
+</body>
+</html>

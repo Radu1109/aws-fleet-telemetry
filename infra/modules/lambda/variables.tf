@@ -1,0 +1,9 @@
+variable "environment" { type = string }
+variable "aws_region" { type = string }
+variable "dynamodb_table_arns" { type = map(string) }
+variable "dynamodb_table_names" { type = map(string) }
+variable "sqs_queue_arns" { type = map(string) }
+variable "kms_key_arn" { type = string }
+variable "lambda_package_path" { type = string }
+variable "u2_cognito_user_pool_id" { type = string }
+variable "dynamodb_outbox_stream_arn" { type = string }
